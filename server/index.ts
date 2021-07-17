@@ -30,11 +30,11 @@ class MainRoomState extends Schema {
     if (!player) return;
 
     if (movement.x) {
-      player.x += movement.x * 10;
+      player.x += movement.x * 25;
     }
 
     if (movement.y) {
-      player.y += movement.y * 10;
+      player.y += movement.y * 25;
     }
   }
 }
