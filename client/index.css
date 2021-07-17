@@ -1,0 +1,12 @@
+.player {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.controller {
+  text-align: center;
+}

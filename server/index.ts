@@ -1,8 +1,8 @@
 import { Server, Room, Client } from "@colyseus/core";
 import { Schema, MapSchema, type } from "@colyseus/schema";
 import { uWebSocketsTransport } from "@colyseus/uwebsockets-transport";
-import { join } from "path";
-import { readFileSync } from "fs";
+import { resolve } from "path";
+import { serveDir } from "uwebsocket-serve";
 
 class PlayerState extends Schema {
   @type("number")
@@ -71,12 +71,14 @@ class MainRoom extends Room<MainRoomState> {
 
 const transport = new uWebSocketsTransport();
 
-transport.app.get("/*", (res: any) => {
-  res.writeStatus("200 OK").end(readFileSync(join(__dirname, "client.html")));
-});
+transport.app.get("/*", serveDir(resolve(__dirname, "../client")));
 
 const gameServer = new Server({ transport });
 
 gameServer.define("main", MainRoom);
 
-gameServer.listen(Number(process.env.port) || 2567);
+const port = Number(process.env.port) || 2567;
+
+console.log(`App available at at http://localhost:${port}`);
+
+gameServer.listen(port);

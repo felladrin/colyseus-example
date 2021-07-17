@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "ts-node-dev server.ts"
+    "start": "ts-node-dev server"
   },
   "devDependencies": {
     "ts-node-dev": "^1.1.8",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@colyseus/core": "^0.14.19",
     "@colyseus/schema": "^1.0.25",
-    "@colyseus/uwebsockets-transport": "^0.14.19"
+    "@colyseus/uwebsockets-transport": "^0.14.19",
+    "uwebsocket-serve": "^1.0.4"
   }
 }
