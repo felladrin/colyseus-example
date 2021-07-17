@@ -69,12 +69,10 @@ class MainRoom extends Room<MainRoomState> {
   }
 }
 
-const htmlDocument = readFileSync(join(__dirname, "client.html"));
-
 const transport = new uWebSocketsTransport();
 
 transport.app.get("/*", (res: any) => {
-  res.writeStatus("200 OK").end(htmlDocument);
+  res.writeStatus("200 OK").end(readFileSync(join(__dirname, "client.html")));
 });
 
 const gameServer = new Server({ transport });
