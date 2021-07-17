@@ -1,6 +1,7 @@
 import { Client } from "https://cdn.skypack.dev/colyseus.js";
 import { AvatarGenerator } from "https://cdn.skypack.dev/random-avatar-generator";
 import NippleJS from "https://cdn.skypack.dev/nipplejs";
+import anime from "https://cdn.skypack.dev/animejs";
 
 new Client(
   `${location.protocol.replace(
@@ -16,22 +17,23 @@ new Client(
     const players = {};
 
     room.state.players.onAdd = (player, sessionId) => {
-      const dom = document.createElement("div");
-      dom.className = "player";
-      dom.title = `Player ${sessionId}`;
-      dom.style.left = player.x + "px";
-      dom.style.top = player.y + "px";
-      dom.style.backgroundImage = `url("${generator.generateRandomAvatar(
+      const playerHtmlElement = document.createElement("div");
+      playerHtmlElement.className = "player";
+      playerHtmlElement.title = `Player ${sessionId}`;
+      playerHtmlElement.style.backgroundImage = `url("${generator.generateRandomAvatar(
         sessionId
       )}")`;
 
-      player.onChange = () => {
-        dom.style.left = player.x + "px";
-        dom.style.top = player.y + "px";
-      };
+      player.onChange = () =>
+        anime({
+          targets: playerHtmlElement,
+          left: player.x,
+          top: player.y,
+          easing: "easeOutQuart",
+        });
 
-      players[sessionId] = dom;
-      document.body.appendChild(dom);
+      players[sessionId] = playerHtmlElement;
+      document.body.appendChild(playerHtmlElement);
     };
 
     room.state.players.onRemove = (player, sessionId) => {
