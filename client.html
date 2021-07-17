@@ -2,16 +2,14 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width" />
-    <script src="https://unpkg.com/colyseus.js@^0.14.12/dist/colyseus.js"></script>
-    <script src="https://unpkg.com/crypto-js@^4.0.0/core.js"></script>
-    <script src="https://unpkg.com/crypto-js@^4.0.0/md5.js"></script>
     <style type="text/css">
       .player {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
         position: absolute;
-        box-sizing: border-box;
-        border-radius: 9999px;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
       }
 
       .controller {
@@ -28,8 +26,11 @@
       <br />
       <button id="downButton">&darr;</button>
     </div>
-    <script>
-      new Colyseus.Client(
+    <script type="module">
+      import { Client } from "https://cdn.skypack.dev/colyseus.js";
+      import { AvatarGenerator } from "https://cdn.skypack.dev/random-avatar-generator";
+
+      new Client(
         `${location.protocol.replace(
           "http",
           "ws"
@@ -39,23 +40,19 @@
       )
         .joinOrCreate("main")
         .then((room) => {
+          const generator = new AvatarGenerator();
           const players = {};
           const colors = ["red", "green", "yellow", "blue", "cyan", "magenta"];
 
           room.state.players.onAdd = (player, sessionId) => {
-            const gravatarHash = CryptoJS.MD5(
-              `${sessionId}@example.com`
-            ).toString();
-
             const dom = document.createElement("div");
             dom.className = "player";
             dom.title = `Player ${sessionId}`;
             dom.style.left = player.x + "px";
             dom.style.top = player.y + "px";
-            dom.style.backgroundImage = `url("https://www.gravatar.com/avatar/${gravatarHash}?d=robohash")`;
-            dom.style.backgroundPosition = `center`;
-            dom.style.backgroundRepeat = `no-repeat`;
-            dom.style.backgroundSize = `cover`;
+            dom.style.backgroundImage = `url("${generator.generateRandomAvatar(
+              sessionId
+            )}")`;
 
             player.onChange = (changes) => {
               dom.style.left = player.x + "px";
