@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/colyseus.js@^0.14.0/dist/colyseus.js"
+    ></script>
+    <style type="text/css">
+      .player {
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        padding-top: 24px;
+        box-sizing: border-box;
+        border-radius: 9999px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="upButton">up</button>
+    <button id="downButton">down</button>
+    <br />
+    <button id="leftButton">left</button>
+    <button id="rightButton">right</button>
+    <script>
+      new Colyseus.Client(
+        location.protocol.replace("http", "ws") +
+          "//" +
+          window.document.location.host.replace(/:.*/, "") +
+          (location.port ? ":" + location.port : "")
+      )
+        .joinOrCreate("game")
+        .then((room) => {
+          const players = {};
+          const colors = ["red", "green", "yellow", "blue", "cyan", "magenta"];
+
+          room.state.players.onAdd = function (player, sessionId) {
+            const dom = document.createElement("div");
+            dom.className = "player";
+            dom.style.left = player.x + "px";
+            dom.style.top = player.y + "px";
+            dom.style.background =
+              colors[Math.floor(Math.random() * colors.length)];
+            dom.innerText = "Player " + sessionId;
+
+            player.onChange = function (changes) {
+              dom.style.left = player.x + "px";
+              dom.style.top = player.y + "px";
+            };
+
+            players[sessionId] = dom;
+            document.body.appendChild(dom);
+          };
+
+          room.state.players.onRemove = function (player, sessionId) {
+            document.body.removeChild(players[sessionId]);
+            delete players[sessionId];
+          };
+
+          room.onMessage("greetings", (message) => {
+            console.log(message);
+          });
+
+          function up() {
+            room.send("move", { y: -1 });
+          }
+
+          function right() {
+            room.send("move", { x: 1 });
+          }
+
+          function down() {
+            room.send("move", { y: 1 });
+          }
+
+          function left() {
+            room.send("move", { x: -1 });
+          }
+
+          document.getElementById("upButton").addEventListener("click", up);
+          document.getElementById("downButton").addEventListener("click", down);
+          document.getElementById("leftButton").addEventListener("click", left);
+          document
+            .getElementById("rightButton")
+            .addEventListener("click", right);
+
+          window.addEventListener("keydown", function (e) {
+            if (e.which === 38) {
+              up();
+            } else if (e.which === 39) {
+              right();
+            } else if (e.which === 40) {
+              down();
+            } else if (e.which === 37) {
+              left();
+            }
+          });
+        });
+    </script>
+  </body>
+</html>
