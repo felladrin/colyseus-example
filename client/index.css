@@ -7,6 +7,21 @@
   background-repeat: no-repeat;
 }
 
-.controller {
+.info {
+  color: darkgray;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  position: absolute;
   text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-transform: uppercase;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #1c2227;
+  margin: 0;
 }

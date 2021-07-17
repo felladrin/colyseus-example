@@ -1,5 +1,6 @@
 import { Client } from "https://cdn.skypack.dev/colyseus.js";
 import { AvatarGenerator } from "https://cdn.skypack.dev/random-avatar-generator";
+import NippleJS from "https://cdn.skypack.dev/nipplejs";
 
 new Client(
   `${location.protocol.replace(
@@ -24,7 +25,7 @@ new Client(
         sessionId
       )}")`;
 
-      player.onChange = (changes) => {
+      player.onChange = () => {
         dom.style.left = player.x + "px";
         dom.style.top = player.y + "px";
       };
@@ -47,21 +48,38 @@ new Client(
     const moveDown = () => room.send("move", { y: 1 });
     const moveLeft = () => room.send("move", { x: -1 });
 
-    document.getElementById("upButton").addEventListener("click", moveUp);
-    document.getElementById("downButton").addEventListener("click", moveDown);
-    document.getElementById("leftButton").addEventListener("click", moveLeft);
-    document.getElementById("rightButton").addEventListener("click", moveRight);
+    const dataTypeToActionMap = {
+      "dir:left": moveLeft,
+      "dir:up": moveUp,
+      "dir:right": moveRight,
+      "dir:down": moveDown,
+    };
+
+    let lastJoystickDataType = null;
+
+    setInterval(() => {
+      dataTypeToActionMap[lastJoystickDataType]?.();
+    }, 100);
+
+    NippleJS.create({
+      zone: document.body,
+      color: "#a3d5ff",
+    })
+      .on("dir:up dir:down dir:right dir:left", (data) => {
+        lastJoystickDataType = data.type;
+      })
+      .on("end", () => {
+        lastJoystickDataType = null;
+      });
 
     const keyCodeToActionMap = {
-      37: moveLeft,
-      38: moveUp,
-      39: moveRight,
-      40: moveDown,
+      ArrowLeft: moveLeft,
+      ArrowUp: moveUp,
+      ArrowRight: moveRight,
+      ArrowDown: moveDown,
     };
 
     window.addEventListener("keydown", (e) => {
-      if (keyCodeToActionMap[e.which]) {
-        keyCodeToActionMap[e.which]();
-      }
+      keyCodeToActionMap[e.code]?.();
     });
   });

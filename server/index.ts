@@ -6,10 +6,10 @@ import { serveDir } from "uwebsocket-serve";
 
 class PlayerState extends Schema {
   @type("number")
-  public x = Math.floor(Math.random() * 400);
+  public x = Math.floor(Math.random() * 200);
 
   @type("number")
-  public y = Math.floor(Math.random() * 400);
+  public y = Math.floor(Math.random() * 200);
 }
 
 class MainRoomState extends Schema {
