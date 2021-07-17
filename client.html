@@ -40,7 +40,7 @@
           location.port ? ":" + location.port : ""
         }`
       )
-        .joinOrCreate("game")
+        .joinOrCreate("main")
         .then((room) => {
           const players = {};
           const colors = ["red", "green", "yellow", "blue", "cyan", "magenta"];

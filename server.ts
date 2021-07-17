@@ -79,6 +79,6 @@ transport.app.get("/*", (res: any) => {
 
 const gameServer = new Server({ transport });
 
-gameServer.define("game", MainRoom);
+gameServer.define("main", MainRoom);
 
 gameServer.listen(Number(process.env.port) || 2567);
