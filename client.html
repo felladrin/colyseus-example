@@ -16,27 +16,36 @@
         border-radius: 9999px;
         text-align: center;
       }
+
+      .controller {
+        text-align: center;
+      }
     </style>
   </head>
   <body>
-    <button id="upButton">up</button>
-    <button id="downButton">down</button>
-    <br />
-    <button id="leftButton">left</button>
-    <button id="rightButton">right</button>
+    <div class="controller">
+      <button id="upButton">&uarr;</button>
+      <br />
+      <button id="leftButton">&larr;</button>
+      <button id="rightButton">&rarr;</button>
+      <br />
+      <button id="downButton">&darr;</button>
+    </div>
     <script>
       new Colyseus.Client(
-        location.protocol.replace("http", "ws") +
-          "//" +
-          window.document.location.host.replace(/:.*/, "") +
-          (location.port ? ":" + location.port : "")
+        `${location.protocol.replace(
+          "http",
+          "ws"
+        )}//${window.document.location.host.replace(/:.*/, "")}${
+          location.port ? ":" + location.port : ""
+        }`
       )
         .joinOrCreate("game")
         .then((room) => {
           const players = {};
           const colors = ["red", "green", "yellow", "blue", "cyan", "magenta"];
 
-          room.state.players.onAdd = function (player, sessionId) {
+          room.state.players.onAdd = (player, sessionId) => {
             const dom = document.createElement("div");
             dom.className = "player";
             dom.style.left = player.x + "px";
@@ -45,7 +54,7 @@
               colors[Math.floor(Math.random() * colors.length)];
             dom.innerText = "Player " + sessionId;
 
-            player.onChange = function (changes) {
+            player.onChange = (changes) => {
               dom.style.left = player.x + "px";
               dom.style.top = player.y + "px";
             };
@@ -54,7 +63,7 @@
             document.body.appendChild(dom);
           };
 
-          room.state.players.onRemove = function (player, sessionId) {
+          room.state.players.onRemove = (player, sessionId) => {
             document.body.removeChild(players[sessionId]);
             delete players[sessionId];
           };
@@ -63,38 +72,32 @@
             console.log(message);
           });
 
-          function up() {
-            room.send("move", { y: -1 });
-          }
+          const moveUp = () => room.send("move", { y: -1 });
+          const moveRight = () => room.send("move", { x: 1 });
+          const moveDown = () => room.send("move", { y: 1 });
+          const moveLeft = () => room.send("move", { x: -1 });
 
-          function right() {
-            room.send("move", { x: 1 });
-          }
-
-          function down() {
-            room.send("move", { y: 1 });
-          }
-
-          function left() {
-            room.send("move", { x: -1 });
-          }
-
-          document.getElementById("upButton").addEventListener("click", up);
-          document.getElementById("downButton").addEventListener("click", down);
-          document.getElementById("leftButton").addEventListener("click", left);
+          document.getElementById("upButton").addEventListener("click", moveUp);
+          document
+            .getElementById("downButton")
+            .addEventListener("click", moveDown);
+          document
+            .getElementById("leftButton")
+            .addEventListener("click", moveLeft);
           document
             .getElementById("rightButton")
-            .addEventListener("click", right);
+            .addEventListener("click", moveRight);
 
-          window.addEventListener("keydown", function (e) {
-            if (e.which === 38) {
-              up();
-            } else if (e.which === 39) {
-              right();
-            } else if (e.which === 40) {
-              down();
-            } else if (e.which === 37) {
-              left();
+          const keyCodeToActionMap = {
+            37: moveLeft,
+            38: moveUp,
+            39: moveRight,
+            40: moveDown,
+          };
+
+          window.addEventListener("keydown", (e) => {
+            if (keyCodeToActionMap[e.which]) {
+              keyCodeToActionMap[e.which]();
             }
           });
         });
