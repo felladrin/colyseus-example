@@ -2,19 +2,16 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width" />
-    <script
-      type="text/javascript"
-      src="https://unpkg.com/colyseus.js@^0.14.0/dist/colyseus.js"
-    ></script>
+    <script src="https://unpkg.com/colyseus.js@^0.14.12/dist/colyseus.js"></script>
+    <script src="https://unpkg.com/crypto-js@^4.0.0/core.js"></script>
+    <script src="https://unpkg.com/crypto-js@^4.0.0/md5.js"></script>
     <style type="text/css">
       .player {
-        width: 100px;
-        height: 100px;
+        width: 80px;
+        height: 80px;
         position: absolute;
-        padding-top: 24px;
         box-sizing: border-box;
         border-radius: 9999px;
-        text-align: center;
       }
 
       .controller {
@@ -46,13 +43,19 @@
           const colors = ["red", "green", "yellow", "blue", "cyan", "magenta"];
 
           room.state.players.onAdd = (player, sessionId) => {
+            const gravatarHash = CryptoJS.MD5(
+              `${sessionId}@example.com`
+            ).toString();
+
             const dom = document.createElement("div");
             dom.className = "player";
+            dom.title = `Player ${sessionId}`;
             dom.style.left = player.x + "px";
             dom.style.top = player.y + "px";
-            dom.style.background =
-              colors[Math.floor(Math.random() * colors.length)];
-            dom.innerText = "Player " + sessionId;
+            dom.style.backgroundImage = `url("https://www.gravatar.com/avatar/${gravatarHash}?d=robohash")`;
+            dom.style.backgroundPosition = `center`;
+            dom.style.backgroundRepeat = `no-repeat`;
+            dom.style.backgroundSize = `cover`;
 
             player.onChange = (changes) => {
               dom.style.left = player.x + "px";
