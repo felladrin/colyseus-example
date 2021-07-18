@@ -40,7 +40,7 @@ class MainRoomState extends Schema {
 }
 
 class MainRoom extends Room<MainRoomState> {
-  public maxClients = 4;
+  public maxClients = 8;
 
   public onCreate(options: Record<string, any>) {
     console.log(
@@ -79,6 +79,6 @@ gameServer.define("main", MainRoom);
 
 const port = Number(process.env.port) || 2567;
 
-console.log(`App available at at http://localhost:${port}`);
+console.log(`App available at http://localhost:${port}`);
 
 gameServer.listen(port);
