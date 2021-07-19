@@ -77,7 +77,7 @@ const gameServer = new Server({ transport });
 
 gameServer.define("main", MainRoom);
 
-const port = Number(process.env.port) || 2567;
+const port = Number(process.env.PORT) || 2567;
 
 console.log(`App available at http://localhost:${port}`);
 
