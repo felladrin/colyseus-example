@@ -69,16 +69,20 @@ class MainRoom extends Room<MainRoomState> {
   }
 }
 
-const transport = new uWebSocketsTransport();
+function startGameServer() {
+  const transport = new uWebSocketsTransport();
 
-transport.app.get("/*", serveDir(resolve(__dirname, "../client")));
+  transport.app.get("/*", serveDir(resolve(__dirname, "../client")));
+  
+  const gameServer = new Server({ transport });
+  
+  gameServer.define("main", MainRoom);
+  
+  const port = Number(process.env.PORT) || 2567;
+  
+  console.log(`App available at http://localhost:${port}`);
+  
+  gameServer.listen(port);
+}
 
-const gameServer = new Server({ transport });
-
-gameServer.define("main", MainRoom);
-
-const port = Number(process.env.PORT) || 2567;
-
-console.log(`App available at http://localhost:${port}`);
-
-gameServer.listen(port);
+startGameServer();
